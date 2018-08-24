@@ -101,7 +101,7 @@ func (s *Supplier) Run() error {
 }
 
 func (s *Supplier) WriteProfileD() error {
-	return s.Stager.WriteProfileD("nginx", fmt.Sprintf("export NGINX_MODULES=%s\nmkdir logs", filepath.Join("$DEPS_DIR", s.Stager.DepsIdx(), "nginx", "nginx", "modules")))
+	return s.Stager.WriteProfileD("nginx", fmt.Sprintf("export NGINX_MODULES=%s\nmkdir -p logs", filepath.Join("$DEPS_DIR", s.Stager.DepsIdx(), "nginx", "nginx", "modules")))
 }
 
 func (s *Supplier) InstallVarify() error {
