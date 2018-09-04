@@ -31,6 +31,9 @@ func main() {
 		"module": func(name string) string {
 			return fmt.Sprintf("load_module %s.so;", filepath.Join(os.Getenv("NGINX_MODULES"), name))
 		},
+		"svcprop": func(args ...string) string {
+			return getServiceProperty(args)
+		},
 	}
 
 	t, err := template.New("conf").Funcs(funcMap).Parse(string(body))
@@ -41,4 +44,30 @@ func main() {
 	if err := t.Execute(fileHandle, nil); err != nil {
 		log.Fatalf("Could not write config file: %s", err)
 	}
+}
+
+func getServiceProperty(args []string) string {
+        vcapservices := os.Getenv("VCAP_SERVICES")
+	var services map[string][]interface{} 
+	
+	serviceType := args[0]
+	serviceName := args[1]
+	propKey := args[2]
+
+	json.Unmarshal([]byte(vcapservices), &services)
+
+	for i := 0; i < len(services[serviceType]); i++ {
+		svc := services[serviceType][i].(map[string]interface{})
+		if serviceName == svc["name"].(string) {
+			if len(args) == 3 {
+				prop := svc[propKey].(string)
+				return prop
+			} else if len(args) == 4 {
+				subPropKey:= args[3]
+				prop := svc[propKey].(map[string]interface{})
+				return prop[subPropKey].(string)
+			}
+		}
+	}
+	return ""
 }
