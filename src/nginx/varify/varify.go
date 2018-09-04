@@ -7,6 +7,7 @@ import (
 	"os"
 	"fmt"
 	"path/filepath"
+	"encoding/json"
 )
 
 func main() {
@@ -47,7 +48,7 @@ func main() {
 }
 
 func getServiceProperty(args []string) string {
-        vcapservices := os.Getenv("VCAP_SERVICES")
+	vcapservices := os.Getenv("VCAP_SERVICES")
 	var services map[string][]interface{} 
 	
 	serviceType := args[0]
